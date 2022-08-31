@@ -34,7 +34,7 @@ android {
         myConfig {
             storeFile file("platform.keystore")
             storePassword "123456"
-            keyAlias "desaysv"
+            keyAlias "xxxx"
             keyPassword "123456"
         }
     }
