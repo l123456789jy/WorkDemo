@@ -11,7 +11,9 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.location.OnNmeaMessageListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
@@ -45,6 +47,10 @@ public class GpsManager implements OnNmeaMessageListener {
         mContext = context;
         //CarLanMsgMgr.getInstance().init(mContext);
         locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+        if (!GpsUtil.isOPen(context)) {
+            GpsUtil.openGPS(context);
+            Toast.makeText(context, "GPS 未打开", Toast.LENGTH_LONG).show();
+        }
         if (locationManager != null) {
             if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -58,7 +64,7 @@ public class GpsManager implements OnNmeaMessageListener {
                 return;
             }
             locationManager.addNmeaListener(this);
-            locationManager.registerGnssStatusCallback(mGnssStatusCallback);//添加卫星状态改变监听
+             locationManager.registerGnssStatusCallback(mGnssStatusCallback);//添加卫星状态改变监听
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     3000, 0, new MyGPsLocationListener());
             Log.d(TAG, "locationManager.registerGnssStatusCallback(mGnssStatusCallback)");
@@ -68,16 +74,27 @@ public class GpsManager implements OnNmeaMessageListener {
 
     @Override
     public void onNmeaMessage(String message, long timestamp) {
-        String msg = "收到的Nmea 回调 " + message ;
+        // 开始时间
+
+        String msg = "收到的Nmea 回调 " + message;
         d(TAG, "onNmeaMessage " + msg);
+        if (message.contains("$GNGGA")) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        // 结束时间
+
     }
 
 
-    public  class MyGPsLocationListener implements LocationListener{
+    public class MyGPsLocationListener implements LocationListener {
         @Override
         public void onLocationChanged(Location location) {
 
-            Log.e(TAG, "onLocationChanged================="+location.getLatitude()+"    Time======"+  location.getTime());
+            Log.e(TAG, "onLocationChanged=================" + location.getLatitude() + "    Time======" + location.getTime());
         }
 
         @Override

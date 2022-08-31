@@ -29,6 +29,24 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    signingConfigs {
+        myConfig {
+            storeFile file("platform.keystore")
+            storePassword "123456"
+            keyAlias "desaysv"
+            keyPassword "123456"
+        }
+    }
+
+    buildTypes {
+        debug  {
+            signingConfig signingConfigs.myConfig
+        }
+    }
+
+
+
 }
 
 dependencies {
