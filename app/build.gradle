@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.camera2demo"
+        applicationId "com.camera2demoxxx"
         minSdkVersion 28
         targetSdkVersion 29
         versionCode 1
@@ -34,7 +34,7 @@ android {
         myConfig {
             storeFile file("platform.keystore")
             storePassword "123456"
-            keyAlias "xxxx"
+            keyAlias "desaysv"
             keyPassword "123456"
         }
     }
@@ -56,5 +56,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+   // implementation (name: 'vdbus-0.0.116', ext: 'aar')
 
 }

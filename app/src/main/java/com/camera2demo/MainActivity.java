@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Sensor;
@@ -68,15 +69,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         getBackCameraId(cameraManager);
-        openCamera(cameraManager, cameraId);
+     //   openCamera(cameraManager, cameraId);
         if (Build.VERSION.SDK_INT >= 23) {// android6 执行运行时权限
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_CODE);
-            }
+//            }
         }
         GpsManager.getInstance().init(this);
          textView = findViewById(R.id.textView);
         textView.setOnClickListener(this);
+
+
+        BootReceiver mBroadcastReceiver = new BootReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("desay.location.USE_GPS_APP");
+        registerReceiver(mBroadcastReceiver, intentFilter);
 
     }
 

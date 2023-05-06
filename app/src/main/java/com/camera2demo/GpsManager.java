@@ -3,6 +3,8 @@ package com.camera2demo;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.GnssStatus;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,16 +14,23 @@ import android.location.LocationProvider;
 import android.location.OnNmeaMessageListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
+
 import static android.content.Context.LOCATION_SERVICE;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
- * @author uidq1246
+ * @author
+ * https://www.jianshu.com/p/87e0dec25071   具体的位置信息
  */
 public class GpsManager implements OnNmeaMessageListener {
 
@@ -46,6 +55,7 @@ public class GpsManager implements OnNmeaMessageListener {
         Log.d(TAG, "init");
         mContext = context;
         //CarLanMsgMgr.getInstance().init(mContext);
+        getAddress(30.763, 103.864);
         locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
         if (!GpsUtil.isOPen(context)) {
             GpsUtil.openGPS(context);
@@ -64,9 +74,15 @@ public class GpsManager implements OnNmeaMessageListener {
                 return;
             }
             locationManager.addNmeaListener(this);
-             locationManager.registerGnssStatusCallback(mGnssStatusCallback);//添加卫星状态改变监听
+            locationManager.registerGnssStatusCallback(mGnssStatusCallback);//添加卫星状态改变监听
+            // 最小时间间隔为1秒
+            long minTime = 1000;
+            // 最小距离间隔为0米,表示忽略距离变化
+            float minDistance = 0;
+            HandlerThread gps = new HandlerThread("gps");
+            gps.start();
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    3000, 0, new MyGPsLocationListener());
+                    minTime, minDistance, new MyGPsLocationListener(), gps.getLooper());
             Log.d(TAG, "locationManager.registerGnssStatusCallback(mGnssStatusCallback)");
 
         }
@@ -93,7 +109,7 @@ public class GpsManager implements OnNmeaMessageListener {
     public class MyGPsLocationListener implements LocationListener {
         @Override
         public void onLocationChanged(Location location) {
-
+            getAddress(location.getLatitude(),location.getLongitude());
             Log.e(TAG, "onLocationChanged=================" + location.getLatitude() + "    Time======" + location.getTime());
         }
 
@@ -109,6 +125,34 @@ public class GpsManager implements OnNmeaMessageListener {
 
         @Override
         public void onProviderDisabled(String provider) {
+
+        }
+    }
+
+    // 获取具体的位置信息
+    private void getAddress(double latitude, double longitude) {
+        //Geocoder通过经纬度获取具体信息
+        Geocoder gc = new Geocoder(mContext, Locale.getDefault());
+        try {
+            List<Address> locationList = gc.getFromLocation(latitude, longitude, 1);
+
+            if (locationList != null) {
+                Address address = locationList.get(0);
+                String countryName = address.getCountryName();//国家
+                String countryCode = address.getCountryCode();
+                String adminArea = address.getAdminArea();//省
+                String locality = address.getLocality();//市
+                String subLocality = address.getSubLocality();//区
+                String featureName = address.getFeatureName();//街道
+
+                for (int i = 0; address.getAddressLine(i) != null; i++) {
+                    String addressLine = address.getAddressLine(i);
+                    Log.e(TAG, "addressLine=================" + addressLine);
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
 
         }
     }
@@ -221,4 +265,13 @@ public class GpsManager implements OnNmeaMessageListener {
     public void d(String tag, String msg) {
         Log.d(tag, msg);
     }
+
+
+   /* public void testHal(){
+        Location gps = new Location("gps");
+        gps.setLatitude(111d);
+        gps.setLongitude(23d);
+        CarExtGnssManager.get().injectExtLocation(gps);
+        CarExtGnssManager.get().injectExtNmea(System.currentTimeMillis(),"$GPGGA");
+    }*/
 }

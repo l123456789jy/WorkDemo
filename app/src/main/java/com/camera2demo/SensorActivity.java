@@ -47,14 +47,24 @@ public class SensorActivity extends Activity implements SensorEventListener {
         // readings again.
         Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (accelerometer != null) {
-            sensorManager.registerListener(this, accelerometer,
+            boolean b = sensorManager.registerListener(this, accelerometer,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+            Log.d("SensorActivity", "Sensor TYPE_ACCELEROMETER 注册结果"+b);
         }
         Sensor magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         if (magneticField != null) {
-            sensorManager.registerListener(this, magneticField,
+            boolean b =sensorManager.registerListener(this, magneticField,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+            Log.d("SensorActivity", "Sensor TYPE_MAGNETIC_FIELD 注册结果"+b);
         }
+        // 陀螺仪
+        Sensor TYPE_GYROSCOPE = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        if (TYPE_GYROSCOPE != null) {
+            boolean b =sensorManager.registerListener(this, TYPE_GYROSCOPE,
+                    SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+            Log.d("SensorActivity", "Sensor TYPE_GYROSCOPE 注册结果"+b);
+        }
+
     }
 
     @Override
